@@ -33,14 +33,15 @@
         <tr>
           <th>{{ 'mnoe_admin_panel.dashboard.provisioning.confirm.name' | translate }}</th>
           <th>{{ 'mnoe_admin_panel.dashboard.provisioning.confirm.description' | translate }}</th>
-          <th id="confirm-price">{{ 'mnoe_admin_panel.dashboard.provisioning.confirm.price' | translate }}</th>
+          <th ng-hide="vm.quoteBased" id="confirm-price">{{ 'mnoe_admin_panel.dashboard.provisioning.confirm.price' | translate }}</th>
+          <th ng-show="vm.quoteBased" id="confirm-price">{{ 'mnoe_admin_panel.dashboard.provisioning.order.quoted_price' | translate }}</th>
         </tr>
         </thead>
         <tbody>
         <tr>
           <td>{{ vm.subscription.product_pricing.name }}</td>
           <td>{{ vm.subscription.product_pricing.description }}</td>
-          <td>
+          <td ng-hide="vm.quoteBased">
             <span ng-show="vm.pricedPlan(vm.subscription.product_pricing)" ng-repeat="price in vm.subscription.product_pricing.prices | filterBy: ['currency']: vm.selectedCurrency" class="badge">
               {{ price.currency }} {{ price.price_cents / 100 }}
             </span>
@@ -53,6 +54,17 @@
             <span ng-show="vm.subscription.product_pricing.pricing_type == 'free'">
               {{ 'mnoe_admin_panel.dashboard.provisioning.order.pricing_type.free' | translate }}
             </span>
+          </td>
+          <td ng-show='vm.quoteBased'>
+            <span ng-hide="vm.quoteFetched"><i class="fa fa-spinner fa-pulse fa-fw"></i></span>
+            <div ng-show="vm.quoteFetched">
+              <span ng-show="vm.quotedPrice">
+                {{ vm.quotedCurrency }} {{ vm.quotedPrice }}
+              </span>
+              <span ng-hide="vm.quotedPrice">
+                {{ 'mnoe_admin_panel.dashboard.provisioning.order.quote_error' | translate }}
+              </span>
+            </div>
           </td>
         </tr>
         </tbody>
@@ -69,7 +81,6 @@
       </mno-widget-body>
     </mno-widget>
   </div>
-
 
   <span class="pull-right top-buffer-1">
     <button ng-show="vm.orderEditable()" class="btn btn-primary" ng-click="vm.editOrder()" translate>
